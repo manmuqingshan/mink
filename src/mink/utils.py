@@ -170,3 +170,22 @@ def get_subtree_geom_ids(model: mujoco.MjModel, body_id: int) -> list[int]:
         geom_ids.extend(get_body_geom_ids(model, body_id))
         stack += get_body_body_ids(model, body_id)
     return geom_ids
+
+
+def get_subtree_joint_ids(model: mujoco.MjModel, body_id: int) -> list[int]:
+    """Get all joints belonging to subtree starting at a given body.
+
+    Here, a subtree is defined as the kinematic tree starting at the body and including
+    all its descendants.
+
+    Args:
+        model: Mujoco model.
+        body_id: ID of body where subtree starts.
+
+    Returns:
+        A list containing all subtree joint ids.
+    """
+    body_ids = set(get_subtree_body_ids(model, body_id))
+    return [
+        jnt_id for jnt_id in range(model.njnt) if model.jnt_bodyid[jnt_id] in body_ids
+    ]
